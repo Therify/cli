@@ -2,17 +2,14 @@ import { Command, flags } from '@oclif/command';
 import { handleIntegrations, IntegrationArgs } from '../integrations';
 
 export default class Integrations extends Command {
-    static description = 'Hub for Therify integrations';
+    static description = `$ therify integrations [integration] [command] <flags>`;
 
-    static examples = [
-        `$ therify integrations jotform
-hello world from ./src/hello.ts!
-`,
-    ];
+    static examples = [`$ therify integrations jotform list-forms`];
 
     static flags = {
         // help: flags.help({ char: 'h' }),
         formid: flags.string({ description: 'Id of JotForm form' }),
+        apikey: flags.string({ char: 'k', description: 'Optional api key' }),
     };
 
     static args = [{ name: 'integrationName' }, { name: 'command' }];
@@ -28,25 +25,5 @@ hello world from ./src/hello.ts!
         } catch (error) {
             this.error(`[integration]: ${error}`);
         }
-        /*
-        - List all forms
-            therify integrations jotform list-forms
-        - List all webhooks
-            therify integrations jotform list-form-webhooks <formId>
-        - List all submissions
-            therify integrations jotform list-form-submissions <formId>
-        */
-        // Pass off to integrations. handle there
-        // const integrationInterface = getIntegrationInterface(args.integrationName);
-        // if (!integrationInterface) {
-        // }
-
-        // const commandFn = integrationInterface(args.integrationName);
-
-        // const name = flags.name ?? 'world';
-        // this.log(`hello ${name} from ./src/commands/hello.ts`);
-        // if (args.file && flags.force) {
-        //     this.log(`you input --force and --file: ${args.file}`);
-        // }
     }
 }

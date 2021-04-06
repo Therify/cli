@@ -1,4 +1,3 @@
-import { flags } from '@oclif/command';
 import * as fs from 'fs-extra';
 import { JotFormApi } from '../../apis';
 import { createConfig, defaultConfigDir, PromptConfig } from '../../utils/handleConfig';
@@ -25,22 +24,34 @@ to use JotForm integrations
     return config;
 };
 
-export const handleJotFormIntegration = async ({ command, flags }: { command: string; flags: { formid: string } }) => {
+const throwFormIdError = () => {
+    throw new Error(`Missing form id. Try using 
+$therify integrations [cmd] --formid=yourformid]`);
+};
+
+export const handleJotFormIntegration = async ({
+    command,
+    flags,
+}: {
+    command: string;
+    flags: { formid?: string; apikey?: string };
+}) => {
     if (command === 'init') {
         return createConfig({
             fileName: jotFormConfigName,
             prompts: jotFormConfigPrompts,
         });
     }
-    const config = await getJotFormConfig(defaultConfigDir);
+    const { formid, apikey } = flags;
+    const config = apikey ? { apikey } : await getJotFormConfig(defaultConfigDir);
     const api = JotFormApi(config.apikey);
     switch (command) {
         case 'list-forms':
             return api.listForms();
         case 'list-form-webhooks':
-            return api.listFormWebhooks(flags.formid);
+            return formid ? api.listFormWebhooks(formid) : throwFormIdError();
         case 'list-form-submissions':
-            return api.listFormSubmissions(flags.formid);
+            return formid ? api.listFormSubmissions(formid) : throwFormIdError();
         default:
             throw new Error(`Cannot find integration command: ${command}`);
     }
